@@ -19,6 +19,22 @@ variable "prefix" {
   default = "terraform"
 }
 
+variable "client_id" {
+  type = string
+}
+
+variable "client_secret" {
+  type = string
+}
+
+variable "subscription_id" {
+  type = string
+}
+
+variable "tenant_id" {
+  type = string
+}
+
 resource "azurerm_resource_group" "rg" {
   name     = "${var.prefix}-ResourceGroup"
   location = "Central India"
