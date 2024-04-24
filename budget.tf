@@ -1,7 +1,3 @@
-provider "azurerm" {
-  features {}
-}
-
 resource "azurerm_management_group" "sysarc2" {
   display_name = "haba managemet group"
 }
