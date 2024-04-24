@@ -9,7 +9,7 @@ resource "azurerm_management_group" "sysarc2" {
 
 resource "azurerm_consumption_budget_management_group" "sysarc2" {
   name                = "sysarc2"
-  management_group_id = azurerm_management_group.valf2.id
+  management_group_id = azurerm_management_group.sysarc2.id
 
   amount     = 500
   time_grain = "Monthly"
