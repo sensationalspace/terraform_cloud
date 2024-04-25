@@ -1,11 +1,11 @@
-resource "azurerm_management_group" "haba_budget" {
+resource "azurerm_management_group" "valf2" {
   display_name = "haba managemet group"
 }
 
 
 resource "azurerm_consumption_budget_management_group" "haba_budget" {
   name                = "haba_budget"
-  management_group_id = azurerm_management_group.haba_budget.id
+  management_group_id = azurerm_management_group.valf2.id
 
   amount     = 50
   time_grain = "Monthly"
