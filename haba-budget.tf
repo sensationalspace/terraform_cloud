@@ -1,11 +1,11 @@
-resource "azurerm_management_group" "valf2" {
+resource "azurerm_management_group" "valf" {
   display_name = "haba managemet group"
 }
 
 
-resource "azurerm_consumption_budget_management_group" "haba_budget" {
-  name                = "haba_budget"
-  management_group_id = azurerm_management_group.valf2.id
+resource "azurerm_consumption_budget_management_group" "valf" {
+  name                = "valf"
+  management_group_id = azurerm_management_group.valf.id
 
   amount     = 50
   time_grain = "Monthly"
@@ -17,9 +17,9 @@ resource "azurerm_consumption_budget_management_group" "haba_budget" {
 
   filter {
     tag {
-      name = "haba_budget"
+      name = "valf"
       values = [
-        "haba_budget",
+        "valf",
       ]
     }
   }
