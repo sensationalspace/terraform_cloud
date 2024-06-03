@@ -118,4 +118,3 @@ output "databricks_cluster_id" {
 ## Submission
 
 Once you have completed the tasks, commit your changes to your forked repository and push them. Share the link to your repository with us for review.
-
