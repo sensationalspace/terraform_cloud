@@ -127,18 +127,4 @@ resource "azurerm_virtual_machine" "vm" {
   }
 }
 
-# Storage account definition
-resource "azurerm_storage_account" "storage" {
-  name                     = "examtorallianzgitest"
-  resource_group_name      = azurerm_resource_group.rg.name
-  location                 = "West Europe"
-  account_tier             = "Standard"
-  account_replication_type = "LRS"
-  account_kind             = "StorageV2"
-  access_tier              = "Hot"
-}
 
-# Output to display the storage account name
-output "storage_account_name" {
-  value = azurerm_storage_account.storage.name
-}
