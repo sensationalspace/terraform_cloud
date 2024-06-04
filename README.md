@@ -7,7 +7,7 @@ Welcome to the Terraform test for the DevOps engineer position. The goal of this
 
 ## Objective
 
-Your task is to enhance the existing Terraform configuration by adding a Databricks cluster setup. You will be working within an existing Terraform project and pushing your changes to a GitHub repository, which will trigger a Terraform Cloud workflow.
+Your task is to enhance the existing Terraform configuration by adding a Storage setup. You will be working within an existing Terraform project and pushing your changes to a GitHub repository, which will trigger a Terraform Cloud workflow.
 
 ## Prerequisites
 
@@ -25,12 +25,15 @@ Your task is to enhance the existing Terraform configuration by adding a Databri
 
 2. **Task: Modify Terraform Scripts**:
    - Navigate to the `terraform` directory in the repository.
-   - Add the necessary Terraform configuration to create a Databricks cluster within the existing Databricks workspace.
-   - Ensure the cluster has the following specifications:
-     - **Cluster name**: `example-cluster`
-     - **Node type**: `Standard_D3_v2`
-     - **Autoscaling**: Enabled, with min nodes 1 and max nodes 3
-     - **Auto-termination**: After 30 minutes of inactivity
+   - Add the necessary Terraform configuration to create an Azure Blob Storage account.
+   - Ensure the Blob Storage account has the following specifications:
+     - **Storage account name**: `examplestorageacct`
+     - **Resource group**: Specify the existing resource group or create a new one if needed.
+     - **Location**: Choose an appropriate Azure region, e.g., `West Europe`
+     - **SKU**: `Standard_LRS`
+     - **Kind**: `StorageV2`
+     - **Access tier**: `Hot`
+
 
 3. **Test the Configuration**:
    - Ensure the Terraform configuration is valid by running:
