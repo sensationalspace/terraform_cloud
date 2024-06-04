@@ -11,10 +11,10 @@ Your task is to enhance the existing Terraform configuration by adding a Databri
 
 ## Prerequisites
 
-- Terraform environment setup in Terraform Cloud.
-- Azure subscription with necessary permissions.
-- GitHub repository with initial Terraform scripts.
-- Codespaces or local Visual Studio Code environment.
+- GitHub Account.
+- Visual Studio Code.
+- Terraform installed.
+- Knowledge of Terraform code and GitHub.
 
 ## Instructions
 
