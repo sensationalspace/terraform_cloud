@@ -22,13 +22,8 @@ Your task is to enhance the existing Terraform configuration by adding a Databri
    - Fork the provided GitHub repository to your GitHub account.
    - Clone the forked repository to your local environment or open it in GitHub Codespaces.
 
-2. **Set Up Azure Credentials**:
-   - Ensure Azure credentials are configured correctly. Use the following command to log in if necessary:
-     ```sh
-     az login
-     ```
 
-3. **Task: Modify Terraform Scripts**:
+2. **Task: Modify Terraform Scripts**:
    - Navigate to the `terraform` directory in the repository.
    - Add the necessary Terraform configuration to create a Databricks cluster within the existing Databricks workspace.
    - Ensure the cluster has the following specifications:
@@ -37,18 +32,18 @@ Your task is to enhance the existing Terraform configuration by adding a Databri
      - **Autoscaling**: Enabled, with min nodes 1 and max nodes 3
      - **Auto-termination**: After 30 minutes of inactivity
 
-4. **Test the Configuration**:
+3. **Test the Configuration**:
    - Ensure the Terraform configuration is valid by running:
      ```sh
      terraform fmt
      terraform validate
      ```
 
-5. **Commit and Push**:
+4. **Commit and Push**:
    - Commit your changes to your forked repository.
    - Push the changes to trigger the Terraform Cloud workflow.
 
-6. **Submission**:
+5. **Submission**:
    - Once completed, submit the link to your forked repository for review.
 
 ## Example Terraform Script
@@ -117,4 +112,4 @@ output "databricks_cluster_id" {
 
 ## Submission
 
-Once you have completed the tasks, commit your changes to your forked repository and push them. Share the link to your repository with us for review.
+Once you have completed the tasks, commit your changes to your forked repository and push them. Then run the Plan in Terraform Cloud if successful your done otherwise update the code and repeat
