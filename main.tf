@@ -103,3 +103,17 @@ resource "azurerm_virtual_machine" "vm" {
     environment = "staging"
   }
 }
+
+resource "azurerm_storage_account" "storage" {
+  name                     = "examplestorageacct"
+  resource_group_name      = azurerm_resource_group.rg.name
+  location                 = "West Europe"
+  account_tier             = "Standard"
+  account_replication_type = "LRS"
+  account_kind             = "StorageV2"
+  access_tier              = "Hot"
+}
+
+output "storage_account_name" {
+  value = azurerm_storage_account.storage.name
+}
