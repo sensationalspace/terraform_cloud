@@ -19,8 +19,8 @@ Your task is to enhance the existing Terraform configuration by adding a Storage
 ## Instructions
 
 1. **Clone the Repository**:
-   - Fork the provided GitHub repository to your GitHub account.
-   - Clone the forked repository to your local environment or open it in GitHub Codespaces.
+   - Clone the repository.
+   - Create a feature branch
 
 
 2. **Task: Modify Terraform Scripts**:
@@ -43,11 +43,13 @@ Your task is to enhance the existing Terraform configuration by adding a Storage
      ```
 
 4. **Commit and Push**:
-   - Commit your changes to your forked repository.
+   - Commit your changes to your fetures branch.
    - Push the changes to trigger the Terraform Cloud workflow.
 
 5. **Submission**:
-   - Once completed, submit the link to your forked repository for review.
+   - Once completed, we will review the plan in terraform cloud if successfull we will apply the changes.
+   - If not you will need to troubleshoot
+   - push the fixes and run the plan again
 
 ## Example Terraform Script
 
@@ -171,9 +173,9 @@ resource "azurerm_virtual_machine" "vm" {
 
 ## Notes
 
-- Ensure that your Azure credentials are correctly configured in Terraform Cloud.
-- The configuration is idempotent and can be applied multiple times without creating duplicate resources.
-- If you encounter any issues, check the Terraform logs and ensure your Azure environment is correctly set up.
+- Ensure that you are able to access the GitHub Repository and clone the project.
+- Make sure you have Terraform installed in your environment to help you develop.
+- You are free to use any resources at your disposal to achieve your goal.
 
 ## Submission
 
