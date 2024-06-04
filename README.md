@@ -3,7 +3,7 @@
 
 ## Overview
 
-Welcome to the Terraform test for the DevOps engineer position. The goal of this test is to assess your ability to create and manage infrastructure using Terraform, specifically focused on setting up a Databricks environment on Azure.
+Welcome to the Terraform test for the DevOps engineer position. The goal of this test is to assess your ability to create and manage infrastructure using Terraform, specifically focused on adding storage to environment on Azure.
 
 ## Objective
 
