@@ -166,7 +166,7 @@ resource "azurerm_virtual_machine" "vm" {
 
 ## Review Criteria
 
-1. **Correctness**: Verify the Terraform plan runs successfully without errors. Ensure the Databricks cluster is configured correctly as per the specifications.
+1. **Correctness**: Verify the Terraform plan runs successfully without errors. Ensure the Resources you are creating are configured correctly as per the specifications.
 2. **Code Quality**: The code should follow Terraform best practices and be well-organized.
 3. **Documentation**: The `README.md` file should clearly explain the setup process and any assumptions or requirements.
 4. **Version Control**: The commit history should show logical, well-documented changes.
