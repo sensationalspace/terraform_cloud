@@ -3,10 +3,10 @@ terraform {
   required_providers {
     azurerm = {
       # Specifies the source of the azurerm provider
-      source  = "hashicorp/azurerm"
+      source = "hashicorp/azurerm"
       # Specifies the minimum version of the azurerm provider
       version = ">= 3.59.0"
-    } 
+    }
   }
   # Specifies the minimum version of Terraform required
   required_version = ">= 0.14.9"
@@ -17,7 +17,7 @@ provider "azurerm" {
 
   # Skips provider registration, which can speed up the apply process
   skip_provider_registration = "true"
-  
+
   # Connection to Azure using service principal credentials
   subscription_id = var.subscription_id
   client_id       = var.client_id
@@ -85,6 +85,16 @@ resource "azurerm_network_interface" "nic" {
   }
 }
 
+resource "azurerm_storage_account" "examplestorageacct" {
+  name                = "examplestorageacct"
+  resource_group_name = azurerm_resource_group.rg.name
+
+  location                 = azurerm_resource_group.rg.location
+  account_tier             = "Standard"
+  access_tier              = "Hot"
+  account_replication_type = "LRS"
+  account_kind             = "StorageV2"
+}
 # Virtual machine definition
 resource "azurerm_virtual_machine" "vm" {
   name                  = "${var.prefix}-vm"
