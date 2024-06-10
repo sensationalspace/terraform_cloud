@@ -11,7 +11,7 @@ Your task is to enhance the existing Terraform configuration by adding a Storage
 
 ## Prerequisites
 
-- GitHub Account.
+- GitHub Account.(Please provide this before the excercise so yo can be added as a collaborator)
 - Visual Studio Code.
 - Terraform installed.
 - Knowledge of Terraform code and GitHub.
@@ -25,6 +25,7 @@ Your task is to enhance the existing Terraform configuration by adding a Storage
 
 2. **Task: Modify Terraform Scripts**:
    - Navigate to the `terraform` directory in the repository.
+   - Explain what is being created by the current Terraform code
    - Add the necessary Terraform configuration to create an Azure Blob Storage account.
    - Ensure the Blob Storage account has the following specifications:
      - **Storage account name**: `examplestorageacct`
