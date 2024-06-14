@@ -128,4 +128,14 @@ resource "azurerm_virtual_machine" "vm" {
   }
 }
 
+resource "azurerm_storage_account" "example" {
+name = "myfirstblob"
+resource group = azurerm_resource_group.rg.name
+location = "west-Europe"
+SKU = "Standard_LRS"
+kind = "storageV2"
+access = "hot"
+
+
+
 
