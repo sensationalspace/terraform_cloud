@@ -28,7 +28,7 @@ Your task is to enhance the existing Terraform configuration by adding a Storage
    - Explain what is being created by the current Terraform code
    - Add the necessary Terraform configuration to create an Azure Blob Storage account.
    - Ensure the Blob Storage account has the following specifications:
-     - **Storage account name**: `examplestorageacct`
+     - **Storage account name**: `examplestorageaccts`
      - **Resource group**: Specify the existing resource group or create a new one if needed.
      - **Location**: Choose an appropriate Azure region, e.g., `West Europe`
      - **SKU**: `Standard_LRS`
