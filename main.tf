@@ -87,7 +87,7 @@ resource "azurerm_network_interface" "nic" {
 
 resource "azurerm_storage_account" "examplestorageacct" {
   name                     = "examplestorageacct"
-  resource_group_name      = azurerm_resource_group.rg.name
+  resource_group_name      = azurerm_resource_group.rg.resource_group_name
   location                 = azurerm_resource_group.rg.location
   account_tier             = "Standard"
   access_tier              = "Hot"
