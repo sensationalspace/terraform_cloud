@@ -12,7 +12,7 @@ Your task is to enhance the existing Terraform configuration by adding a Storage
 ## Prerequisites
 
 - GitHub Account.(Please provide this before the excercise so yo can be added as a collaborator)
-- Visual Studio Code.
+- Visual Studio Code or your own preference.
 - Terraform installed.
 - Knowledge of Terraform code and GitHub.
 
