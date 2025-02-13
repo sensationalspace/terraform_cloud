@@ -1,6 +1,68 @@
-# Storage Account with VNet Network Rules
+terraform {
+  required_providers {
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = ">= 3.59.0"
+    }
+  }
+  required_version = ">= 0.14.9"
+}
+
+provider "azurerm" {
+  features {}
+  skip_provider_registration = true
+
+  subscription_id = var.subscription_id
+  client_id       = var.client_id
+  client_secret   = var.client_secret
+  tenant_id       = var.tenant_id
+}
+
+variable "prefix" {
+  default = "terraform"
+}
+
+variable "client_id" {
+  type = string
+}
+
+variable "client_secret" {
+  type = string
+}
+
+variable "subscription_id" {
+  type = string
+}
+
+variable "tenant_id" {
+  type = string
+}
+
+# Declare the Resource Group
+resource "azurerm_resource_group" "rg" {
+  name     = "${var.prefix}-ResourceGroup"
+  location = "Central India"
+}
+
+# Declare the Virtual Network
+resource "azurerm_virtual_network" "vnet" {
+  name                = "${var.prefix}-VNet"
+  address_space       = ["10.0.0.0/16"]
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+}
+
+# Declare the Subnet
+resource "azurerm_subnet" "internal" {
+  name                 = "${var.prefix}-internal"
+  resource_group_name  = azurerm_resource_group.rg.name
+  virtual_network_name = azurerm_virtual_network.vnet.name
+  address_prefixes     = ["10.0.2.0/24"]
+}
+
+# Storage Account with VNet integration using network rules
 resource "azurerm_storage_account" "storage" {
-  name                     = lower("${var.prefix}storacc")  # must be globally unique & lowercase
+  name                     = lower("${var.prefix}storacc")  # must be globally unique and lowercase
   resource_group_name      = azurerm_resource_group.rg.name
   location                 = azurerm_resource_group.rg.location
   account_tier             = "Standard"
@@ -12,7 +74,7 @@ resource "azurerm_storage_account" "storage" {
   }
 }
 
-# Private Endpoint for Storage Account (Optional for tighter integration)
+# Private Endpoint for the Storage Account
 resource "azurerm_private_endpoint" "storage_pe" {
   name                = "${var.prefix}-storage-pe"
   location            = azurerm_resource_group.rg.location
@@ -22,28 +84,22 @@ resource "azurerm_private_endpoint" "storage_pe" {
   private_service_connection {
     name                           = "${var.prefix}-storage-psc"
     private_connection_resource_id = azurerm_storage_account.storage.id
-    subresource_names              = ["blob"]  # You can also include "file", "queue", etc.
+    subresource_names              = ["blob"]  # Options: "blob", "file", etc.
     is_manual_connection           = false
   }
 }
 
-# (Optional) Private DNS Zone for Storage Account (ensures proper name resolution)
+# Private DNS Zone for the Storage Account Blob endpoint
 resource "azurerm_private_dns_zone" "storage_zone" {
   name                = "privatelink.blob.core.windows.net"
   resource_group_name = azurerm_resource_group.rg.name
 }
 
+# Link the DNS Zone to your Virtual Network for proper name resolution
 resource "azurerm_private_dns_zone_virtual_network_link" "storage_zone_link" {
   name                  = "${var.prefix}-dnslink"
   resource_group_name   = azurerm_resource_group.rg.name
   private_dns_zone_name = azurerm_private_dns_zone.storage_zone.name
   virtual_network_id    = azurerm_virtual_network.vnet.id
   registration_enabled  = true
-}
-
-# (Optional) DNS Zone Group to link the Private Endpoint with the DNS zone
-resource "azurerm_private_endpoint_dns_zone_group" "storage_dns" {
-  name                 = "${var.prefix}-dzg"
-  private_endpoint_id  = azurerm_private_endpoint.storage_pe.id
-  private_dns_zone_ids = [azurerm_private_dns_zone.storage_zone.id]
 }
