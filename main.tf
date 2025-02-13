@@ -60,9 +60,16 @@ resource "azurerm_subnet" "internal" {
   address_prefixes     = ["10.0.2.0/24"]
 }
 
-# Storage Account with VNet integration using network rules
+# Generate a random suffix for uniqueness
+resource "random_string" "storage_suffix" {
+  length  = 6
+  special = false
+  upper   = false
+}
+
+# Updated Storage Account with unique name
 resource "azurerm_storage_account" "storage" {
-  name                     = lower("${var.prefix}storacc")  # must be globally unique and lowercase
+  name                     = lower("${var.prefix}storacc${random_string.storage_suffix.result}")  # globally unique
   resource_group_name      = azurerm_resource_group.rg.name
   location                 = azurerm_resource_group.rg.location
   account_tier             = "Standard"
@@ -73,6 +80,7 @@ resource "azurerm_storage_account" "storage" {
     virtual_network_subnet_ids = [azurerm_subnet.internal.id]
   }
 }
+
 
 # Private Endpoint for the Storage Account
 resource "azurerm_private_endpoint" "storage_pe" {
