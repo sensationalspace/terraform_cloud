@@ -27,7 +27,7 @@ provider "azurerm" {
 
 # Variable to define a prefix for resource naming
 variable "prefix" {
-  default = "terraform-test"
+  default = "terraform"
 }
 
 # Variable to store Azure service principal client ID
