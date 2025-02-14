@@ -53,7 +53,7 @@ variable "tenant_id" {
 # Storage account name
 variable "storage_account_name" {
   type    = string
-  default = "storage1"
+  default = "storage123abhivas34"
 }
 
 #Creates storage account 
