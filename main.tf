@@ -64,6 +64,9 @@ resource "azurerm_storage_account" "stgacct" {
   account_replication_type = "LRS"
   account_kind             = "StorageV2"
   access_tier              = "Hot"
+  tags = {
+    environment = "staging"
+  }
 }
 
 # Resource group definition
