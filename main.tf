@@ -97,7 +97,7 @@ resource "azurerm_storage_account" "blob_storage" {
 }
 
 resource "azurerm_storage_container" "blob_storage" {
-  name                  = "content"
+  name                  = "${var.prefix}-vishal-container"
   storage_account_name  = "${var.prefix}-vishal-storage"
   container_access_type = "private"
 }
@@ -105,7 +105,7 @@ resource "azurerm_storage_container" "blob_storage" {
 resource "azurerm_storage_blob" "blob_storage" {
   name                   = "${var.prefix}-vishal-blob-storage"
   storage_account_name   = "${var.prefix}-vishal-storage"
-  storage_container_name = content
+  storage_container_name = "${var.prefix}-vishal-container"
   type                   = "Block"
   source                 = "some-local-file.zip"
 }
