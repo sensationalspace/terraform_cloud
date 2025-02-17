@@ -50,23 +50,6 @@ variable "tenant_id" {
   type = string
 }
 
-# Storage account name
-variable "storage_account_name" {
-  type    = string
-  default = "storage123abhivas34"
-}
-
-#Creates storage account 
-resource "azurerm_storage_account" "stgacct" {
-  name                     = var.storage_account_name
-  resource_group_name      = azurerm_resource_group.rg.name
-  location                 = azurerm_resource_group.rg.location
-  account_tier             = "Standard"
-  account_replication_type = "LRS"
-  account_kind             = "StorageV2"
-  access_tier              = "Hot"
-}
-
 # Resource group definition
 resource "azurerm_resource_group" "rg" {
   name     = "${var.prefix}-ResourceGroup"
