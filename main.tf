@@ -43,7 +43,7 @@ variable "client_id" {
 }
 
 variable "client_secret" {
-  type = string
+  type      = string
   sensitive = true
 }
 
@@ -80,10 +80,10 @@ resource "azurerm_subnet" "internal" {
   address_prefixes     = ["10.0.2.0/24"]
 }
 resource "azurerm_subnet" "pe" {
-  name                 = "${var.prefix}-pe"
-  resource_group_name  = azurerm_resource_group.rg.name
-  virtual_network_name = azurerm_virtual_network.vnet.name
-  address_prefixes     = ["10.0.3.0/24"]
+  name                              = "${var.prefix}-pe"
+  resource_group_name               = azurerm_resource_group.rg.name
+  virtual_network_name              = azurerm_virtual_network.vnet.name
+  address_prefixes                  = ["10.0.3.0/24"]
   private_endpoint_network_policies = "Enabled"
 }
 
@@ -157,8 +157,8 @@ resource "azurerm_private_endpoint" "storage_account" {
   subnet_id           = azurerm_subnet.pe.id
 
   private_service_connection {
-    name                           = "example-privateserviceconnection"
-    private_connection_resource_id = azurerm_private_link_service.example.id
+    name                           = "${var.prefix}-pe-sa"
+    private_connection_resource_id = azurerm_storage_account.this.id
     subresource_names              = ["blob"]
     is_manual_connection           = false
   }
