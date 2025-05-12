@@ -22,25 +22,18 @@ terraform {
 provider "azurerm" {
   features {}
 
-  # Service-principal creds
   subscription_id = var.subscription_id
   tenant_id       = var.tenant_id
   client_id       = var.client_id
   client_secret   = var.client_secret
 
-  # Disable automatic RP registration (new way)
   resource_provider_registrations = "none"
 }
 
 #######################################
 #              VARIABLES              #
 #######################################
-variable "prefix" {
-  description = "Prefix used for all resources"
-  type        = string
-  default     = "terra"
-}
-
+variable "prefix"          { type = string default = "terra" }
 variable "client_id"       { type = string }
 variable "client_secret"   { type = string }
 variable "subscription_id" { type = string }
@@ -59,10 +52,8 @@ resource "random_string" "suffix" {
 #               LOCALS                #
 #######################################
 locals {
-  # Storage account: 3–24 chars, lowercase letters & digits only
   storage_account_name = "${var.prefix}vishalstorage${random_string.suffix.result}"
   container_name       = "${var.prefix}-vishal-container"
-  blob_name            = "${var.prefix}-vishal-blob-storage"
 }
 
 #######################################
@@ -117,14 +108,6 @@ resource "azurerm_storage_container" "blob_storage" {
   name                  = local.container_name
   storage_account_id    = azurerm_storage_account.blob_storage.id
   container_access_type = "private"
-}
-
-resource "azurerm_storage_blob" "blob_storage" {
-  name                   = local.blob_name
-  storage_account_name   = azurerm_storage_account.blob_storage.name
-  storage_container_name = azurerm_storage_container.blob_storage.name
-  type                   = "Block"
-  source                 = "some-local-file.zip"
 }
 
 #######################################
