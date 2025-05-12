@@ -34,8 +34,8 @@ provider "azurerm" {
 #              VARIABLES              #
 #######################################
 variable "prefix" {
-  type        = string
-  default     = "terra"
+  type    = string
+  default = "terra"
 }
 
 variable "client_id" {
@@ -52,24 +52,6 @@ variable "subscription_id" {
 
 variable "tenant_id" {
   type = string
-}
-
-
-#######################################
-#        RANDOM SUFFIX FOR SA         #
-#######################################
-resource "random_string" "suffix" {
-  length  = 4
-  upper   = false
-  special = false
-}
-
-#######################################
-#               LOCALS                #
-#######################################
-locals {
-  storage_account_name = "${var.prefix}vishalstorage${random_string.suffix.result}"
-  container_name       = "${var.prefix}-vishal-container"
 }
 
 #######################################
@@ -107,23 +89,6 @@ resource "azurerm_network_interface" "nic" {
     subnet_id                     = azurerm_subnet.internal.id
     private_ip_address_allocation = "Dynamic"
   }
-}
-
-#######################################
-#              STORAGE                #
-#######################################
-resource "azurerm_storage_account" "blob_storage" {
-  name                     = local.storage_account_name
-  resource_group_name      = azurerm_resource_group.rg.name
-  location                 = azurerm_resource_group.rg.location
-  account_tier             = "Standard"
-  account_replication_type = "LRS"
-}
-
-resource "azurerm_storage_container" "blob_storage" {
-  name                  = local.container_name
-  storage_account_id    = azurerm_storage_account.blob_storage.id
-  container_access_type = "private"
 }
 
 #######################################
