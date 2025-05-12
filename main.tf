@@ -7,7 +7,7 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = ">= 3.59.0"
+      version = ">= 4.0"
     }
     random = {
       source  = "hashicorp/random"
@@ -28,9 +28,8 @@ provider "azurerm" {
   client_id       = var.client_id
   client_secret   = var.client_secret
 
-  # Replaces the deprecated skip_provider_registration flag
-  # Empty list = register nothing automatically
-  resource_provider_registrations = []
+  # Disable automatic RP registration (new way)
+  resource_provider_registrations = "none"
 }
 
 #######################################
@@ -60,7 +59,7 @@ resource "random_string" "suffix" {
 #               LOCALS                #
 #######################################
 locals {
-  # Storage-account names: 3–24 chars, letters & digits only
+  # Storage account: 3–24 chars, lowercase letters & digits only
   storage_account_name = "${var.prefix}vishalstorage${random_string.suffix.result}"
   container_name       = "${var.prefix}-vishal-container"
   blob_name            = "${var.prefix}-vishal-blob-storage"
