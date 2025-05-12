@@ -1,71 +1,89 @@
-# Configure Azure Provider
+#######################################
+#            TERRAFORM BLOCK          #
+#######################################
 terraform {
+  required_version = ">= 0.14.9"
+
   required_providers {
     azurerm = {
-      # Specifies the source of the azurerm provider
-      source = "hashicorp/azurerm"
-      # Specifies the minimum version of the azurerm provider
+      source  = "hashicorp/azurerm"
       version = ">= 3.59.0"
     }
+    random = {
+      source  = "hashicorp/random"
+      version = ">= 3.5.1"
+    }
   }
-  # Specifies the minimum version of Terraform required
-  required_version = ">= 0.14.9"
 }
 
+#######################################
+#            PROVIDER BLOCK           #
+#######################################
 provider "azurerm" {
   features {}
 
-  # Skips provider registration, which can speed up the apply process
-  skip_provider_registration = "true"
-
-  # Connection to Azure using service principal credentials
+  # Service-principal creds
   subscription_id = var.subscription_id
+  tenant_id       = var.tenant_id
   client_id       = var.client_id
   client_secret   = var.client_secret
-  tenant_id       = var.tenant_id
+
+  # Replaces the deprecated skip_provider_registration flag
+  # Empty list = register nothing automatically
+  resource_provider_registrations = []
 }
 
-# Variable to define a prefix for resource naming
+#######################################
+#              VARIABLES              #
+#######################################
 variable "prefix" {
-  default = "terra"
+  description = "Prefix used for all resources"
+  type        = string
+  default     = "terra"
 }
 
-# Variable to store Azure service principal client ID
-variable "client_id" {
-  type = string
+variable "client_id"       { type = string }
+variable "client_secret"   { type = string }
+variable "subscription_id" { type = string }
+variable "tenant_id"       { type = string }
+
+#######################################
+#        RANDOM SUFFIX FOR SA         #
+#######################################
+resource "random_string" "suffix" {
+  length  = 4
+  upper   = false
+  special = false
 }
 
-# Variable to store Azure service principal client secret
-variable "client_secret" {
-  type = string
+#######################################
+#               LOCALS                #
+#######################################
+locals {
+  # Storage-account names: 3–24 chars, letters & digits only
+  storage_account_name = "${var.prefix}vishalstorage${random_string.suffix.result}"
+  container_name       = "${var.prefix}-vishal-container"
+  blob_name            = "${var.prefix}-vishal-blob-storage"
 }
 
-# Variable to store Azure subscription ID
-variable "subscription_id" {
-  type = string
-}
-
-# Variable to store Azure tenant ID
-variable "tenant_id" {
-  type = string
-}
-
-# Resource group definition
+#######################################
+#         RESOURCE GROUP              #
+#######################################
 resource "azurerm_resource_group" "rg" {
-  name     = "${var.prefix}-ResourceGroup"
+  name     = "${var.prefix}-resourcegroup"
   location = "Central India"
 }
 
-# Virtual network definition
+#######################################
+#             NETWORKING              #
+#######################################
 resource "azurerm_virtual_network" "vnet" {
-  name                = "${var.prefix}-VNet"
+  name                = "${var.prefix}-vnet"
   address_space       = ["10.0.0.0/16"]
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
 }
 
-
-# Subnet definition
 resource "azurerm_subnet" "internal" {
   name                 = "${var.prefix}-internal"
   resource_group_name  = azurerm_resource_group.rg.name
@@ -73,23 +91,23 @@ resource "azurerm_subnet" "internal" {
   address_prefixes     = ["10.0.2.0/24"]
 }
 
-# Network interface definition
 resource "azurerm_network_interface" "nic" {
-  name                = "${var.prefix}-NIC"
+  name                = "${var.prefix}-nic"
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
 
   ip_configuration {
-    name                          = "tfconfiguration1"
+    name                          = "primary"
     subnet_id                     = azurerm_subnet.internal.id
     private_ip_address_allocation = "Dynamic"
   }
 }
 
-# Blob Storage definition
-
+#######################################
+#              STORAGE                #
+#######################################
 resource "azurerm_storage_account" "blob_storage" {
-  name                     = "${var.prefix}-vishal-storage"
+  name                     = local.storage_account_name
   resource_group_name      = azurerm_resource_group.rg.name
   location                 = azurerm_resource_group.rg.location
   account_tier             = "Standard"
@@ -97,20 +115,22 @@ resource "azurerm_storage_account" "blob_storage" {
 }
 
 resource "azurerm_storage_container" "blob_storage" {
-  name                  = "${var.prefix}-vishal-container"
-  storage_account_name  = "${var.prefix}-vishal-storage"
+  name                  = local.container_name
+  storage_account_id    = azurerm_storage_account.blob_storage.id
   container_access_type = "private"
 }
 
 resource "azurerm_storage_blob" "blob_storage" {
-  name                   = "${var.prefix}-vishal-blob-storage"
-  storage_account_name   = "${var.prefix}-vishal-storage"
-  storage_container_name = "${var.prefix}-vishal-container"
+  name                   = local.blob_name
+  storage_account_name   = azurerm_storage_account.blob_storage.name
+  storage_container_name = azurerm_storage_container.blob_storage.name
   type                   = "Block"
   source                 = "some-local-file.zip"
 }
 
-# Virtual machine definition
+#######################################
+#          VIRTUAL MACHINE            #
+#######################################
 resource "azurerm_virtual_machine" "vm" {
   name                  = "${var.prefix}-vm"
   location              = azurerm_resource_group.rg.location
@@ -118,35 +138,30 @@ resource "azurerm_virtual_machine" "vm" {
   network_interface_ids = [azurerm_network_interface.nic.id]
   vm_size               = "Standard_DS1_v2"
 
-  # OS image definition
   storage_image_reference {
     publisher = "Canonical"
-    offer     = "UbuntuServer"
-    sku       = "16.04-LTS"
+    offer     = "0001-com-ubuntu-server-focal"
+    sku       = "20_04-lts"
     version   = "latest"
   }
 
-  # OS disk definition
   storage_os_disk {
-    name              = "myosdisk1"
+    name              = "${var.prefix}-osdisk"
     caching           = "ReadWrite"
     create_option     = "FromImage"
     managed_disk_type = "Standard_LRS"
   }
 
-  # OS profile definition
   os_profile {
     computer_name  = "hostname"
     admin_username = "tfadmin"
     admin_password = "Password1234!"
   }
 
-  # Linux-specific OS profile configuration
   os_profile_linux_config {
     disable_password_authentication = false
   }
 
-  # Tags for the virtual machine
   tags = {
     environment = "staging"
   }
