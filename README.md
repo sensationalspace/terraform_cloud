@@ -1,183 +1,110 @@
+# Terraform Technical Exercise – Level‑Up Edition
 
-# Storage Setup with Terraform
+*"Infrastructure is poetry written in HCL – make every block count."*
 
-## Overview
+## Context
 
-Welcome to the Terraform test for the DevOps engineer position. The goal of this test is to assess your ability to create and manage infrastructure using Terraform, specifically focused on adding storage to environment on Azure.
+This exercise builds upon existing Azure infrastructure components. The current repository provisions:
+
+- A resource group in Central India
+- One flat VNet with two subnets
+- An Ubuntu virtual machine
+- A Storage Account with Private Endpoint and Private DNS configuration
+
+The objective is to enhance this foundation with enterprise-grade security, modularity, and operational excellence principles suitable for production banking environments.
 
 ## Objective
 
-Your task is to enhance the existing Terraform configuration by adding a Storage setup. You will be working within an existing Terraform project and pushing your changes to a GitHub repository, which will trigger a Terraform Cloud workflow.
+Extend the existing Terraform configuration within 60 minutes to create a production-ready, network-segmented, and security-conscious platform that meets enterprise banking standards.
 
-## Prerequisites
+**Key Principle:** Small, well-structured commits demonstrate better engineering practices than monolithic changes.
 
-- GitHub Account.(Please provide this before the excercise so yo can be added as a collaborator)
-- Visual Studio Code or your own preference.
-- Terraform installed.
-- Knowledge of Terraform code and GitHub.
+## Technical Requirements
 
-## Instructions
+### 1. Network Modularization
+Create a reusable network module that provisions:
+- Virtual Network (VNet)
+- Three segmented subnets: `workloads`, `endpoints`, `bastion`
+- Network Security Groups (NSGs) with appropriate associations
+- Security rules: SSH access restricted to your IP address for bastion subnet; outbound internet access blocked from workloads subnet
 
-1. **Clone the Repository**:
-   - Clone the repository.
-   - Create a feature branch
+### 2. Identity and Access Management
+- Provision a System-Assigned Managed Identity for the virtual machine
+- Deploy Azure Key Vault with enterprise security configuration
+- Store a secret named `app-config` in the Key Vault
+- Grant the VM's managed identity **Get** permissions to the secret via Azure RBAC (not access policies)
 
+### 3. Operational Excellence
+- Enable boot diagnostics on the virtual machine, utilizing the existing Storage Account (use data source to avoid hard-coding)
 
-2. **Task: Modify Terraform Scripts**:
-   - Navigate to the `terraform` directory in the repository.
-   - Explain what is being created by the current Terraform code
-   - Add the necessary Terraform configuration to create an Azure Blob Storage account.
-   - Ensure the Blob Storage account has the following specifications:
-     - **Storage account name**: `examplestorageaccts`
-     - **Resource group**: Specify the existing resource group or create a new one if needed.
-     - **Location**: Choose an appropriate Azure region, e.g., `West Europe`
-     - **SKU**: `Standard_LRS`
-     - **Kind**: `StorageV2`
-     - **Access tier**: `Hot`
+### 4. Configuration Management
+- Replace hard-coded values (location, environment, prefix, tags) with variables and sensible defaults
+- Implement `locals.tf` with a canonical `common_tags` map
+- Apply consistent tagging across all resources
 
+### 5. Infrastructure Outputs
+Expose the following outputs for downstream consumption:
+- Virtual machine private IP address
+- Key Vault URI
+- Storage Account blob endpoint
+- Managed Identity resource ID
 
-3. **Test the Configuration**:
-   - Ensure the Terraform configuration is valid by running:
-     ```sh
-     terraform fmt
-     terraform validate
-     ```
+### 6. Bonus Objectives (Time Permitting)
+- Configure remote state backend using Azure Storage (same Storage Account, different container)
+- Deploy bastion host VM and disable SSH access on workload VM entirely
 
-4. **Commit and Push**:
-   - Commit your changes to your fetures branch.
-   - Push the changes to trigger the Terraform Cloud workflow.
+## Acceptance Criteria
 
-5. **Submission**:
-   - Once completed, we will review the plan in terraform cloud if successfull we will apply the changes.
-   - If not you will need to troubleshoot
-   - push the fixes and run the plan again
+| ID | Requirement | Validation Method |
+|----|-------------|-------------------|
+| A | Code plans and applies without manual intervention | `terraform plan` & `terraform apply -auto-approve` |
+| B | Networking encapsulated in reusable module | Directory structure includes `/modules/network` |
+| C | VM authenticates to Key Vault via Managed Identity | Azure CLI: `az keyvault secret show --vault-name ... --name app-config --query value` succeeds from VM |
+| D | Internet egress blocked from workloads subnet | `curl https://example.com` from VM returns connection failure |
+| E | All resources carry mandatory tags | `az resource list --tag environment` returns all provisioned resources |
 
-## Example Terraform Script
+**Note:** Failure of any must-have requirement results in test failure.
 
-Here is an example `main.tf` to guide you:
+## Getting Started
 
-```hcl
-# Configure Azure Provider
-terraform {
-  required_providers {
-     azurerm = {
-      source = "hashicorp/azurerm"
-      version = ">= 3.59.0"
-    } 
-  }
-  required_version = ">= 0.14.9"
-}
+1. **Repository Setup**
+   ```bash
+   git checkout -b feature/<your-name>
+   cp terraform.tfvars.example terraform.tfvars
+   # Configure your Azure credentials in terraform.tfvars
+   ```
 
-provider "azurerm" {
-  features {}
+2. **Infrastructure Deployment**
+   ```bash
+   terraform init
+   terraform plan -out tf.plan
+   terraform apply tf.plan
+   ```
 
-  skip_provider_registration = "true"
-  
-  # Connection to Azure
-  subscription_id = var.subscription_id
-  client_id = var.client_id
-  client_secret = var.client_secret
-  tenant_id = var.tenant_id
-}
+## Deliverables
 
-variable "prefix" {
-  default = "terraform"
-}
+1. Committed and pushed code changes
+2. Pull request with concise description covering:
+   - Key design decisions
+   - Any incomplete requirements
+   - Assumptions made
 
-variable "client_id" {
-  type = string
-}
+## Resource Cleanup
 
-variable "client_secret" {
-  type = string
-}
+Execute `terraform destroy` upon completion to avoid unnecessary cloud costs.
 
-variable "subscription_id" {
-  type = string
-}
+## Evaluation Criteria
 
-variable "tenant_id" {
-  type = string
-}
+This assessment prioritizes **clarity of thought over resource quantity**. Demonstrate:
 
-resource "azurerm_resource_group" "rg" {
-  name     = "${var.prefix}-ResourceGroup"
-  location = "Central India"
-}
+- **Idempotence**: Consistent results across multiple executions
+- **Security-first mindset**: Principle of least privilege throughout
+- **Simplicity**: Elegant solutions with minimal complexity
 
-resource "azurerm_virtual_network" "vnet" {
-  name                = "${var.prefix}-VNet"
-  address_space       = ["10.0.0.0/16"]
-  location            = azurerm_resource_group.rg.location
-  resource_group_name = azurerm_resource_group.rg.name
-}
+## Support
 
-resource "azurerm_subnet" "internal" {
-  name                 = "${var.prefix}-internal"
-  resource_group_name  = azurerm_resource_group.rg.name
-  virtual_network_name = azurerm_virtual_network.vnet.name
-  address_prefixes     = ["10.0.2.0/24"]
-}
+For clarification on requirements, commit your current progress and include explanatory comments. Ambiguity resolution is part of this technical assessment.
 
-resource "azurerm_network_interface" "nic" {
-  name                = "${var.prefix}-NIC"
-  location            = azurerm_resource_group.rg.location
-  resource_group_name = azurerm_resource_group.rg.name
+---
 
-  ip_configuration {
-    name                          = "tfconfiguration1"
-    subnet_id                     = azurerm_subnet.internal.id
-    private_ip_address_allocation = "Dynamic"
-  }
-}
-
-resource "azurerm_virtual_machine" "vm" {
-  name                  = "${var.prefix}-vm"
-  location              = azurerm_resource_group.rg.location
-  resource_group_name   = azurerm_resource_group.rg.name
-  network_interface_ids = [azurerm_network_interface.nic.id]
-  vm_size               = "Standard_DS1_v2"
-
-  storage_image_reference {
-    publisher = "Canonical"
-    offer     = "UbuntuServer"
-    sku       = "16.04-LTS"
-    version   = "latest"
-  }
-  storage_os_disk {
-    name              = "myosdisk1"
-    caching           = "ReadWrite"
-    create_option     = "FromImage"
-    managed_disk_type = "Standard_LRS"
-  }
-  os_profile {
-    computer_name  = "hostname"
-    admin_username = "tfadmin"
-    admin_password = "Password1234!"
-  }
-  os_profile_linux_config {
-    disable_password_authentication = false
-  }
-  tags = {
-    environment = "staging"
-  }
-}
-
-```
-
-## Review Criteria
-
-1. **Correctness**: Verify the Terraform plan runs successfully without errors. Ensure the Resources you are creating are configured correctly as per the specifications.
-2. **Code Quality**: The code should follow Terraform best practices and be well-organized.
-3. **Documentation**: The `README.md` file should clearly explain the setup process and any assumptions or requirements.
-4. **Version Control**: The commit history should show logical, well-documented changes.
-
-## Notes
-
-- Ensure that you are able to access the GitHub Repository and clone the project.
-- Make sure you have Terraform installed in your environment to help you develop.
-- You are free to use any resources at your disposal to achieve your goal.
-
-## Submission
-
-Once you have completed the tasks, commit your changes to your forked repository and push them. Then run the Plan in Terraform Cloud if successful your done otherwise update the code and repeat
+*Best of luck with your implementation. Remember: even production infrastructure should reflect thoughtful engineering.*
