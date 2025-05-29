@@ -1,5 +1,5 @@
 resource "azurerm_network_security_group" "nsg-workload" {
-  name                = "${azurerm_subnet.workload}-nsg"
+  name                = "${azurerm_subnet.workload.name}-nsg"
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
 
@@ -21,7 +21,7 @@ resource "azurerm_network_security_group" "nsg-workload" {
 }
 
 resource "azurerm_network_security_group" "nsg-bastion" {
-  name                = "${azurerm_subnet.bastion}-nsg"
+  name                = "${azurerm_subnet.bastion.name}-nsg"
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
 
@@ -42,7 +42,7 @@ resource "azurerm_network_security_group" "nsg-bastion" {
   }
 }
 resource "azurerm_network_security_group" "nsg-endpoint" {
-  name                = "${azurerm_subnet.endpoint}-nsg"
+  name                = "${azurerm_subnet.endpoint.name}-nsg"
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
 
@@ -63,16 +63,16 @@ resource "azurerm_network_security_group" "nsg-endpoint" {
 }
 
 resource "azurerm_subnet_network_security_group_association" "nsgSnet-w" {
-  subnet_id                 = azurerm_subnet.workload 
-  network_security_group_id = azurerm_network_security_group.nsg-workload
+  subnet_id                 = azurerm_subnet.workload.id 
+  network_security_group_id = azurerm_network_security_group.nsg-workload.id
 }
 
 resource "azurerm_subnet_network_security_group_association" "nsgSnet-b" {
-  subnet_id                 = azurerm_subnet.bastion
-  network_security_group_id = azurerm_network_security_group.nsg-bastion
+  subnet_id                 = azurerm_subnet.bastion.id
+  network_security_group_id = azurerm_network_security_group.nsg-bastion.id
 }
 
 resource "azurerm_subnet_network_security_group_association" "nsgSnet-e" {
-  subnet_id                 = azurerm_subnet.endpoint
-  network_security_group_id = azurerm_network_security_group.nsg-endpoint
+  subnet_id                 = azurerm_subnet.endpoint.id
+  network_security_group_id = azurerm_network_security_group.nsg-endpoint.id
 }

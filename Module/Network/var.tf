@@ -28,6 +28,6 @@ variable "snetAddressSpace" {
 }
 
 variable "networkPolicy" {
-  type = bool
-  default = true
+  type = string
+  default = "Enabled"
 }

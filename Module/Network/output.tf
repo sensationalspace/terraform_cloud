@@ -7,15 +7,15 @@ output "rgLocation" {
 }
 
 output "snet-b" {
-  value = azurerm_subnet_network_security_group_association.nsgSnet-b
+  value = azurerm_subnet_network_security_group_association.nsgSnet-b.id
 }
 
 output "snet-e" {
-  value = azurerm_subnet_network_security_group_association.nsgSnet-e
+  value = azurerm_subnet_network_security_group_association.nsgSnet-e.id
 }
 
 output "snet-w" {
-  value = azurerm_subnet_network_security_group_association.nsgSnet-w
+  value = azurerm_subnet_network_security_group_association.nsgSnet-w.id
 }
 
 output "vnetID" {
