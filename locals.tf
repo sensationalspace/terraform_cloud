@@ -1,7 +1,6 @@
 locals {
-  vnetAddressSpace = [
-    ["10.0.0.0/16"]
-  ]
+  vnetAddressSpace = "10.0.0.0/16"
+  
 
   snetAddressSpace = [
     ["10.0.1.0/24"],
